@@ -1,52 +1,56 @@
 import sys
-import ctypes
-from sdl2 import *
 from math import pi, sin, cos, trunc
+import ctypes
+import sdl2
+import sdl2.ext
 
 STEP = 0.01
 A_COEFF = 100
 CENTER_X = 100
-CENTER_Y = 100
+CENTER_Y = 200
+
 
 def draw(renderer):
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);     
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+    sdl2.SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0)
+    sdl2.SDL_RenderClear(renderer)
+    sdl2.SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255)
 
-    points = []
+    points_set = set()
 
     a = A_COEFF
     t = 0
-    while t < 2*pi:
-        x = a*cos(t)*(1+cos(t)) + CENTER_X
-        y = a*sin(t)*(1+cos(t)) + CENTER_Y
-        points.append(SDL_Point(trunc(x), trunc(y)))
+    while t < 2 * pi:
+        p = a * cos(t) * (1 + cos(t)) + CENTER_X
+        y = a * sin(t) * (1 + cos(t)) + CENTER_Y
+        points_set.add((trunc(p), trunc(y)))
         t += STEP
 
-    arr = (SDL_Point * len(points))(*points)
+    points_count = len(points_set)
+    points_array = (sdl2.SDL_Point*points_count)(*[sdl2.SDL_Point(p[0], p[1]) for p in points_set])
 
-    SDL_RenderDrawPoints(renderer, arr, len(points))
-    SDL_RenderPresent(renderer);
+    sdl2.SDL_RenderDrawPoints(renderer, points_array, points_count)
+    sdl2.SDL_RenderPresent(renderer)
 
 
 def main():
-    SDL_Init(SDL_INIT_VIDEO)
-    window = SDL_CreateWindow(b"Lab 1 - Cardioid",
-                              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                              500, 500, SDL_WINDOW_SHOWN, SDL_WINDOW_RESIZABLE)
+    sdl2.SDL_Init(sdl2.SDL_INIT_VIDEO)
+    window = sdl2.SDL_CreateWindow(b"Lab 1 - Cardioid",
+                                   sdl2.SDL_WINDOWPOS_CENTERED, sdl2.SDL_WINDOWPOS_CENTERED,
+                                   500, 500, sdl2.SDL_WINDOW_SHOWN, sdl2.SDL_WINDOW_RESIZABLE)
     # CREATE !!!
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)
+    renderer = sdl2.SDL_CreateRenderer(
+        window, -1, sdl2.SDL_RENDERER_ACCELERATED)
 
     running = True
-    event = SDL_Event()
+    event = sdl2.SDL_Event()
     while running:
-        while SDL_PollEvent(ctypes.byref(event)) != 0:
-            if event.type == SDL_QUIT:
+        while sdl2.SDL_PollEvent(ctypes.byref(event)) != 0:
+            if event.type == sdl2.SDL_QUIT:
                 running = False
                 break
         draw(renderer)
-    SDL_DestroyWindow(window)
-    SDL_Quit()
+    sdl2.SDL_DestroyWindow(window)
+    sdl2.SDL_Quit()
     return 0
 
 
