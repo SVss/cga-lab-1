@@ -9,33 +9,23 @@ CENTER_Y = 100
 COEFF_A = 100
 STEP = 0.01
 
+
 def draw(surface):
-    sdl2ext.fill(surface, 0)
-    color = sdl2ext.Color(255, 255, 255)
+    sdl2ext.fill(surface, 0xFFFFFF)
+    color = sdl2ext.Color(0, 0, 0)
     points = []
-
-    # points += [10, 10, 20, 20, 20, 20, 30, 30,]
-
-    points.append(CENTER_X)
-    points.append(CENTER_Y)
-
     t = 0
-    while t <= 2*pi:
-        x = trunc(COEFF_A * cos(t) * (1*cos(t))) + CENTER_X
-        y = trunc(COEFF_A * sin(t) * (1*sin(t))) + CENTER_Y
+    while t < 2*pi:
+        x = trunc(COEFF_A * cos(t) * (1 + cos(t))) + CENTER_X
+        y = trunc(COEFF_A * sin(t) * (1 + cos(t))) + CENTER_Y
+        points += [(x, y)]
+        t += STEP
+    
+    SDL_LockSurface(surface)
+    
+    # TODO: Manipulate with pixels directly
 
-        points.append(x)
-        points.append(y)
-
-        points.append(x)
-        points.append(y)
-
-        t += STEP;
-
-    points.append(CENTER_X)
-    points.append(CENTER_Y)
-
-    sdl2ext.line(surface, color, points)
+    SDL_UnlockSurface(surface)
 
 
 def main():
