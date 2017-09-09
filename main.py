@@ -1,41 +1,65 @@
 import sys
-import ctypes
 from sdl2 import *
+import sdl2.ext as sdl2ext
+from math import pi, sin, cos, trunc
 
+CENTER_X = 100
+CENTER_Y = 100
 
-def draw(renderer):
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
-    SDL_RenderClear(renderer);     
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+COEFF_A = 100
+STEP = 0.01
 
+def draw(surface):
+    sdl2ext.fill(surface, 0)
+    color = sdl2ext.Color(255, 255, 255)
     points = []
-    points.append(SDL_Point(10, 10))
 
-    arr = (SDL_Point * len(points))(*points)
+    # points += [10, 10, 20, 20, 20, 20, 30, 30,]
 
-    SDL_RenderDrawLine(renderer, 10, 10, 20, 20)
-    SDL_RenderPresent(renderer);
+    points.append(CENTER_X)
+    points.append(CENTER_Y)
+
+    t = 0
+    while t <= 2*pi:
+        x = trunc(COEFF_A * cos(t) * (1*cos(t))) + CENTER_X
+        y = trunc(COEFF_A * sin(t) * (1*sin(t))) + CENTER_Y
+
+        points.append(x)
+        points.append(y)
+
+        points.append(x)
+        points.append(y)
+
+        t += STEP;
+
+    points.append(CENTER_X)
+    points.append(CENTER_Y)
+
+    sdl2ext.line(surface, color, points)
 
 
 def main():
-    SDL_Init(SDL_INIT_VIDEO)
-    window = SDL_CreateWindow(b"Lab 1 - Cardioid",
-                              SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
-                              500, 500, SDL_WINDOW_SHOWN, SDL_WINDOW_RESIZABLE)
-    renderer = SDL_GetRenderer(window)
+    sdl2ext.init()
+    window = sdl2ext.Window("2D drawing primitives", size=(500, 500))
+    window.show()
 
+    surface = window.get_surface()
+    
     running = True
-    event = SDL_Event()
     while running:
-        while SDL_PollEvent(ctypes.byref(event)) != 0:
+        events = sdl2ext.get_events()
+        for event in events:
             if event.type == SDL_QUIT:
                 running = False
                 break
-        draw(renderer)
-    SDL_DestroyWindow(window)
-    SDL_Quit()
+        draw(surface)
+        window.refresh()
+    sdl2ext.quit()
+
     return 0
 
 
 if __name__ == "__main__":
+    # COEFF_A = float(input("Enter 'a' value:"))
+    # STEP = input("Enter 'a' value:")
     sys.exit(main())
