@@ -1,7 +1,12 @@
 import sys
 import ctypes
 from sdl2 import *
+from math import pi, sin, cos, trunc
 
+STEP = 0.01
+A_COEFF = 100
+CENTER_X = 100
+CENTER_Y = 100
 
 def draw(renderer):
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 0);
@@ -9,11 +14,18 @@ def draw(renderer):
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
     points = []
-    points.append(SDL_Point(10, 10))
+
+    a = A_COEFF
+    t = 0
+    while t < 2*pi:
+        x = a*cos(t)*(1+cos(t)) + CENTER_X
+        y = a*sin(t)*(1+cos(t)) + CENTER_Y
+        points.append(SDL_Point(trunc(x), trunc(y)))
+        t += STEP
 
     arr = (SDL_Point * len(points))(*points)
 
-    SDL_RenderDrawLine(renderer, 10, 10, 20, 20)
+    SDL_RenderDrawPoints(renderer, arr, len(points))
     SDL_RenderPresent(renderer);
 
 
@@ -22,7 +34,8 @@ def main():
     window = SDL_CreateWindow(b"Lab 1 - Cardioid",
                               SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                               500, 500, SDL_WINDOW_SHOWN, SDL_WINDOW_RESIZABLE)
-    renderer = SDL_GetRenderer(window)
+    # CREATE !!!
+    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED)
 
     running = True
     event = SDL_Event()
